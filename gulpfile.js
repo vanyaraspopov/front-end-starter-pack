@@ -18,28 +18,31 @@ var gulp = require('gulp'),
 var path = {
     build: {
         //  output
-        html: 'app/',
-        js: 'app/js/',
-        css: 'app/css/',
-        img: 'app/img/',
-        fonts: 'app/fonts/'
-        //bower: 'app/bower/'
+        base: 'app/',
+        html: this.base,
+        js: this.base + 'js/',
+        css: this.base + 'css/',
+        img: this.base + 'img/',
+        fonts: this.base + 'fonts/'
+        //bower: this.base + 'bower/'
     },
     src: {
         //  sources
-        html: 'app/*.html',
-        js: 'app/js/index.js',
-        style: 'app/sass/style.scss',
-        img: 'app/img/**/*.*',
-        fonts: 'app/fonts/**/*.*'
+        base: './app/',
+        html: this.base + '*.html',
+        js: this.base + 'js/index.js',
+        style: this.base + 'sass/style.scss',
+        img: this.base + 'img/**/*.*',
+        fonts: this.base + 'fonts/**/*.*'
     },
     watch: {
         //  files watch to
-        html: 'app/**/*.html',
-        js: 'app/js/**/*.js',
-        style: 'app/sass/**/*.scss',
-        img: 'app/img/**/*.*',
-        fonts: 'app/fonts/**/*.*'
+        base: './app/',
+        html: this.base + '**/*.html',
+        js: this.base + 'js/**/*.js',
+        style: this.base + 'sass/**/*.scss',
+        img: this.base + 'img/**/*.*',
+        fonts: this.base + 'fonts/**/*.*'
     },
     clean: './dist/*'
 };
@@ -53,6 +56,38 @@ var config = {
     port: 9000,
     logPrefix: "Gulp"
 };
+
+
+//  Development tasks
+
+gulp.task('default', ['build', 'webserver', 'watch']);
+
+gulp.task('build', [
+    'html:build',
+    'js:build',
+    'style:build'
+    //'fonts:build',
+    //'main-bower-files'
+]);
+
+gulp.task('webserver', function () {
+    browserSync(config);
+});
+
+gulp.task('watch', function () {
+    watch([path.watch.html], function (event, cb) {
+        gulp.start('html:build');
+    });
+    watch([path.watch.style], function (event, cb) {
+        gulp.start('style:build');
+    });
+    watch([path.watch.js], function (event, cb) {
+        gulp.start('js:build');
+    });
+    /*watch([path.watch.fonts], function (event, cb) {
+     gulp.start('fonts:build');
+     });*/
+});
 
 gulp.task('html:build', function () {
     gulp.src(path.src.html)
@@ -93,35 +128,17 @@ gulp.task('style:build', function () {
         .pipe(gulp.dest(path.build.bower));
 });*/
 
-gulp.task('build', [
-    'html:build',
-    'js:build',
-    'style:build'
-    //'fonts:build',
-    //'main-bower-files'
-]);
-
-gulp.task('watch', function () {
-    watch([path.watch.html], function (event, cb) {
-        gulp.start('html:build');
-    });
-    watch([path.watch.style], function (event, cb) {
-        gulp.start('style:build');
-    });
-    watch([path.watch.js], function (event, cb) {
-        gulp.start('js:build');
-    });
-    /*watch([path.watch.fonts], function (event, cb) {
-        gulp.start('fonts:build');
-    });*/
-});
-
-gulp.task('webserver', function () {
-    browserSync(config);
-});
-
 gulp.task('clean', function (cb) {
     rimraf(path.clean, cb);
 });
 
-gulp.task('default', ['build', 'webserver', 'watch']);
+
+//  Init tasks
+
+gulp.task('init', ['font-awesome']);
+
+// Move font-awesome fonts folder to css compiled folder
+gulp.task('font-awesome', function() {
+    return gulp.src('./bower_components/components-font-awesome/fonts/**.*')
+        .pipe(gulp.dest(path.src.base + 'fonts/font-awesome'));
+});

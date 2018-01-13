@@ -17,3 +17,4 @@ gen
 # Gulp output
 /dist/
 /app/css/
+/app/fonts/font-awesome/
