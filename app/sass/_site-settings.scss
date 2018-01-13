@@ -1,0 +1,39 @@
+@charset "UTF-8";
+
+// ----------------------
+// == Site settings
+// ----------------------
+
+// Fonts
+$em-base: 16px;
+$em-base-sm: 14px;
+$font-Arial: Arial, sans-serif;
+$font-Helvetica: Helvetica, Arial, sans-serif;
+$font-HelveticaNeue: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+// = Colors
+// -----------------------------
+
+// Graphic chart
+$black: #000;
+$white: #fff;
+$red: #df2e30;
+$blue: #26a6d1;
+$green: #3db39e;
+$gray: #f6f6f6;
+$light-gray: #6a6a6a;
+$dark-gray: #324d5b;
+
+$app-store: #26a6d1;
+$facebook: #3b5998;
+$twitter: #55acee;
+$google: #dd4b39;
+
+// = Layout
+$header-padding-lg: 70px 0;
+$header-padding-md: 50px 0;
+$header-padding-sm: 30px 0;
+
+$section-padding-lg: 115px 0;
+$section-padding-md: 75px 0;
+$section-padding-sm: 50px 0;
