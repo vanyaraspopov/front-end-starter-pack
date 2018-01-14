@@ -15,41 +15,43 @@ var gulp = require('gulp'),
     browserSync = require("browser-sync"),
     reload = browserSync.reload;
 
+const DIR = './';
 var path = {
     build: {
         //  output
-        base: 'app/',
-        html: this.base,
-        js: this.base + 'js/',
-        css: this.base + 'css/',
-        img: this.base + 'img/',
-        fonts: this.base + 'fonts/'
-        //bower: this.base + 'bower/'
+        base: 'dist/',
+        html: 'dist/',
+        js: 'dist/js/',
+        css: 'dist/css/',
+        img: 'dist/img/',
+        fonts: 'dist/fonts/'
+        //bower: 'dist/bower/'
     },
     src: {
         //  sources
-        base: './app/',
-        html: this.base + '*.html',
-        js: this.base + 'js/index.js',
-        style: this.base + 'sass/style.scss',
-        img: this.base + 'img/**/*.*',
-        fonts: this.base + 'fonts/**/*.*'
+        base: 'app/',
+        html: 'app/*.html',
+        //js: 'app/js/index.js',
+        js: 'app/js/**/*.js',
+        style: 'app/sass/style.scss',
+        img: 'app/img/**/*.*',
+        fonts: 'app/fonts/**/*.*'
     },
     watch: {
         //  files watch to
-        base: './app/',
-        html: this.base + '**/*.html',
-        js: this.base + 'js/**/*.js',
-        style: this.base + 'sass/**/*.scss',
-        img: this.base + 'img/**/*.*',
-        fonts: this.base + 'fonts/**/*.*'
+        base: 'app/',
+        html: 'app/**/*.html',
+        js: 'app/js/**/*.js',
+        style: 'app/sass/**/*.scss',
+        img: 'app/img/**/*.*',
+        fonts: 'app/fonts/**/*.*'
     },
-    clean: './dist/*'
+    clean: DIR + 'dist/*'
 };
 
 var config = {
     server: {
-        baseDir: "./app"
+        baseDir: "./dist"
     },
     tunnel: true,
     host: 'localhost',
@@ -60,54 +62,35 @@ var config = {
 
 //  Development tasks
 
-gulp.task('default', ['build', 'webserver', 'watch']);
-
-gulp.task('build', [
-    'html:build',
-    'js:build',
-    'style:build'
-    //'fonts:build',
-    //'main-bower-files'
-]);
-
 gulp.task('webserver', function () {
     browserSync(config);
 });
 
 gulp.task('watch', function () {
-    watch([path.watch.html], function (event, cb) {
-        gulp.start('html:build');
-    });
-    watch([path.watch.style], function (event, cb) {
-        gulp.start('style:build');
-    });
-    watch([path.watch.js], function (event, cb) {
-        gulp.start('js:build');
-    });
-    /*watch([path.watch.fonts], function (event, cb) {
-     gulp.start('fonts:build');
-     });*/
+    gulp.watch(path.watch.html, gulp.parallel('html:build'));
+    gulp.watch(path.watch.style, gulp.parallel('style:build'));
+    gulp.watch(path.watch.js, gulp.parallel('js:build'));
 });
 
 gulp.task('html:build', function () {
-    gulp.src(path.src.html)
+    return gulp.src(path.src.html)
         .pipe(rigger())
         .pipe(gulp.dest(path.build.html))
         .pipe(reload({stream: true}));
 });
 
 gulp.task('js:build', function () {
-    gulp.src(path.src.js)
-        // .pipe(rigger())
-        // .pipe(sourcemaps.init())
-        // .pipe(uglify())
-        // .pipe(sourcemaps.write())
-        // .pipe(gulp.dest(path.build.js))
+    return gulp.src(path.src.js)
+    // .pipe(rigger())
+    // .pipe(sourcemaps.init())
+    // .pipe(uglify())
+    // .pipe(sourcemaps.write())
+        .pipe(gulp.dest(path.build.js))
         .pipe(reload({stream: true}));
 });
 
 gulp.task('style:build', function () {
-    gulp.src(path.src.style)
+    return gulp.src(path.src.style)
         .pipe(sourcemaps.init())
         .pipe(sass()) //Скомпилируем
         //.pipe(prefixer())
@@ -117,16 +100,32 @@ gulp.task('style:build', function () {
         .pipe(reload({stream: true}));
 });
 
-/*gulp.task('fonts:build', function () {
-    gulp.src(path.src.fonts)
+gulp.task('fonts:build', function () {
+    return gulp.src(path.src.fonts)
         .pipe(gulp.dest(path.build.fonts))
-});*/
+});
+
+gulp.task('img:build', function () {
+    return gulp.src(path.src.img)
+        .pipe(gulp.dest(path.build.img))
+});
 
 /*gulp.task('main-bower-files', function () {
-    return gulp.src('./bower.json')
-        .pipe(mainBowerFiles())
-        .pipe(gulp.dest(path.build.bower));
-});*/
+ return gulp.src('./bower.json')
+ .pipe(mainBowerFiles())
+ .pipe(gulp.dest(path.build.bower));
+ });*/
+
+gulp.task('build', gulp.parallel(
+    'html:build',
+    'js:build',
+    'style:build',
+    'fonts:build',
+    'img:build'
+    //'main-bower-files'
+));
+
+gulp.task('default', gulp.series('build', gulp.parallel('watch', 'webserver')));
 
 gulp.task('clean', function (cb) {
     rimraf(path.clean, cb);
@@ -135,10 +134,10 @@ gulp.task('clean', function (cb) {
 
 //  Init tasks
 
-gulp.task('init', ['font-awesome']);
-
 // Move font-awesome fonts folder to css compiled folder
 gulp.task('font-awesome', function() {
     return gulp.src('./bower_components/components-font-awesome/fonts/**.*')
         .pipe(gulp.dest(path.src.base + 'fonts/font-awesome'));
 });
+
+gulp.task('init', gulp.series('font-awesome', 'build'));

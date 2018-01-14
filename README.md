@@ -8,7 +8,7 @@ development.
 
 * NodeJS
 * Bower
-* Gulp
+* Gulp, v.4.\*
 * SCSS preproccessor
 
 
