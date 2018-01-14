@@ -9,10 +9,10 @@ out
 gen
 
 # NodeJS
-/node_modules/
+node_modules/
 
 # Bower
-/bower_components/
+bower_components/
 
 # Gulp output
 /dist/

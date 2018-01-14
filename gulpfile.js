@@ -1,19 +1,20 @@
 'use strict';
 
 var gulp = require('gulp'),
+    bower = require('main-bower-files'),
     watch = require('gulp-watch'),
     //prefixer = require('gulp-autoprefixer'),
     //uglify = require('gulp-uglify'),
     sass = require('gulp-sass'),
     sourcemaps = require('gulp-sourcemaps'),
     rigger = require('gulp-rigger'),
-    //mainBowerFiles = require('gulp-main-bower-files'),
     //cssmin = require('gulp-minify-css'),
     //imagemin = require('gulp-imagemin'),
     //pngquant = require('imagemin-pngquant'),
     rimraf = require('rimraf'),
     browserSync = require("browser-sync"),
-    reload = browserSync.reload;
+    reload = browserSync.reload,
+    wiredep = require('wiredep').stream;
 
 const DIR = './';
 var path = {
@@ -24,8 +25,8 @@ var path = {
         js: 'dist/js/',
         css: 'dist/css/',
         img: 'dist/img/',
-        fonts: 'dist/fonts/'
-        //bower: 'dist/bower/'
+        fonts: 'dist/fonts/',
+        bower: 'dist/bower_components/'
     },
     src: {
         //  sources
@@ -35,7 +36,8 @@ var path = {
         js: 'app/js/**/*.js',
         style: 'app/sass/style.scss',
         img: 'app/img/**/*.*',
-        fonts: 'app/fonts/**/*.*'
+        fonts: 'app/fonts/**/*.*',
+        bower: 'app/bower_components/'
     },
     watch: {
         //  files watch to
@@ -75,6 +77,10 @@ gulp.task('watch', function () {
 gulp.task('html:build', function () {
     return gulp.src(path.src.html)
         .pipe(rigger())
+        .pipe(wiredep({
+            optional: 'configuration',
+            goes: 'here'
+        }))
         .pipe(gulp.dest(path.build.html))
         .pipe(reload({stream: true}));
 });
@@ -110,19 +116,18 @@ gulp.task('img:build', function () {
         .pipe(gulp.dest(path.build.img))
 });
 
-/*gulp.task('main-bower-files', function () {
- return gulp.src('./bower.json')
- .pipe(mainBowerFiles())
- .pipe(gulp.dest(path.build.bower));
- });*/
+gulp.task('bower', function () {
+    return gulp.src(bower(), { base: path.src.bower })
+        .pipe(gulp.dest(path.build.bower));
+});
 
 gulp.task('build', gulp.parallel(
     'html:build',
     'js:build',
     'style:build',
     'fonts:build',
-    'img:build'
-    //'main-bower-files'
+    'img:build',
+    'bower'
 ));
 
 gulp.task('default', gulp.series('build', gulp.parallel('watch', 'webserver')));
@@ -135,7 +140,7 @@ gulp.task('clean', function (cb) {
 //  Init tasks
 
 // Move font-awesome fonts folder to css compiled folder
-gulp.task('font-awesome', function() {
+gulp.task('font-awesome', function () {
     return gulp.src('./bower_components/components-font-awesome/fonts/**.*')
         .pipe(gulp.dest(path.src.base + 'fonts/font-awesome'));
 });
