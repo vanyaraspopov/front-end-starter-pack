@@ -9,9 +9,9 @@ var gulp = require('gulp'),
     watch = require('gulp-watch');
 
 //  CSS plugins
-var sass = require('gulp-sass');
+var sass = require('gulp-sass'),
     //cssmin = require('gulp-minify-css'),
-    //prefixer = require('gulp-autoprefixer'),
+    autoprefixer = require('gulp-autoprefixer');
 
 //  JS plugins
 //var uglify = require('gulp-uglify');
@@ -107,7 +107,10 @@ gulp.task('style:build', function () {
     return gulp.src(paths.src.style)
         .pipe(sourcemaps.init())
         .pipe(sass())
-        //.pipe(prefixer())
+        .pipe(autoprefixer({
+            browsers: ['last 2 versions'],
+            cascade: false
+        }))
         //.pipe(cssmin())
         .pipe(sourcemaps.write())
         .pipe(gulp.dest(paths.build.css))
