@@ -30,7 +30,10 @@
       ]
     },
     "components-font-awesome": {
-      "main": "css/font-awesome.min.css"
+      "main": [
+        "css/font-awesome.min.css",
+        "fonts/**/*.*"
+      ]
     }
   }
 }

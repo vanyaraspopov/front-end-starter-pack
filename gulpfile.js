@@ -150,10 +150,4 @@ gulp.task('default', gulp.series('build', gulp.parallel('watch', 'webserver')));
 
 //  Init tasks
 
-// Move font-awesome fonts folder to css compiled folder
-gulp.task('font-awesome', function () {
-    return gulp.src(paths.src.bower + 'components-font-awesome/fonts/**.*')
-        .pipe(gulp.dest(paths.src.base + 'fonts/font-awesome'));
-});
-
-gulp.task('init', gulp.series('font-awesome', 'build'));
+gulp.task('init', gulp.series('build'));
