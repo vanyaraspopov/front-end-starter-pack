@@ -1,23 +1,31 @@
 'use strict';
 
+//  Common plugins
 var gulp = require('gulp'),
-    bower = require('main-bower-files'),
-    watch = require('gulp-watch'),
-    //prefixer = require('gulp-autoprefixer'),
-    //uglify = require('gulp-uglify'),
-    sass = require('gulp-sass'),
-    sourcemaps = require('gulp-sourcemaps'),
-    rigger = require('gulp-rigger'),
-    //cssmin = require('gulp-minify-css'),
-    //imagemin = require('gulp-imagemin'),
-    //pngquant = require('imagemin-pngquant'),
-    rimraf = require('rimraf'),
     browserSync = require("browser-sync"),
     reload = browserSync.reload,
+    rigger = require('gulp-rigger'), rimraf = require('rimraf'),
+    sourcemaps = require('gulp-sourcemaps'),
+    watch = require('gulp-watch');
+
+//  CSS plugins
+var sass = require('gulp-sass');
+    //cssmin = require('gulp-minify-css'),
+    //prefixer = require('gulp-autoprefixer'),
+
+//  JS plugins
+//var uglify = require('gulp-uglify');
+
+//  Bower plugins
+var bower = require('main-bower-files'),
     wiredep = require('wiredep').stream;
 
+//  Image plugins
+//imagemin = require('gulp-imagemin'),
+//pngquant = require('imagemin-pngquant'),
+
 const DIR = './';
-var path = {
+var paths = {
     build: {
         //  output
         base: 'dist/',
@@ -69,72 +77,72 @@ gulp.task('webserver', function () {
 });
 
 gulp.task('watch', function () {
-    gulp.watch(path.watch.html, gulp.parallel('html:build'));
-    gulp.watch(path.watch.style, gulp.parallel('style:build'));
-    gulp.watch(path.watch.js, gulp.parallel('js:build'));
+    gulp.watch(paths.watch.html, gulp.parallel('html:build'));
+    gulp.watch(paths.watch.style, gulp.parallel('style:build'));
+    gulp.watch(paths.watch.js, gulp.parallel('js:build'));
 });
 
 gulp.task('html:build', function () {
-    return gulp.src(path.src.html)
+    return gulp.src(paths.src.html)
         .pipe(rigger())
         .pipe(wiredep({
             optional: 'configuration',
             goes: 'here'
         }))
-        .pipe(gulp.dest(path.build.html))
+        .pipe(gulp.dest(paths.build.html))
         .pipe(reload({stream: true}));
 });
 
 gulp.task('js:build', function () {
-    return gulp.src(path.src.js)
+    return gulp.src(paths.src.js)
     // .pipe(rigger())
     // .pipe(sourcemaps.init())
     // .pipe(uglify())
     // .pipe(sourcemaps.write())
-        .pipe(gulp.dest(path.build.js))
+        .pipe(gulp.dest(paths.build.js))
         .pipe(reload({stream: true}));
 });
 
 gulp.task('style:build', function () {
-    return gulp.src(path.src.style)
+    return gulp.src(paths.src.style)
         .pipe(sourcemaps.init())
-        .pipe(sass()) //Скомпилируем
+        .pipe(sass())
         //.pipe(prefixer())
         //.pipe(cssmin())
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest(path.build.css))
+        .pipe(gulp.dest(paths.build.css))
         .pipe(reload({stream: true}));
 });
 
 gulp.task('fonts:build', function () {
-    return gulp.src(path.src.fonts)
-        .pipe(gulp.dest(path.build.fonts))
+    return gulp.src(paths.src.fonts)
+        .pipe(gulp.dest(paths.build.fonts))
 });
 
 gulp.task('img:build', function () {
-    return gulp.src(path.src.img)
-        .pipe(gulp.dest(path.build.img))
+    return gulp.src(paths.src.img)
+        .pipe(gulp.dest(paths.build.img))
 });
 
 gulp.task('bower', function () {
-    return gulp.src(bower(), { base: path.src.bower })
-        .pipe(gulp.dest(path.build.bower));
+    return gulp.src(bower(), {base: paths.src.bower})
+        .pipe(gulp.dest(paths.build.bower));
 });
 
-gulp.task('build', gulp.parallel(
+gulp.task('clean', function (cb) {
+    rimraf(paths.clean, cb);
+});
+
+gulp.task('build', gulp.series('clean', gulp.parallel(
     'html:build',
     'js:build',
     'style:build',
     'fonts:build',
     'img:build',
     'bower'
-));
+)));
 
 gulp.task('default', gulp.series('build', gulp.parallel('watch', 'webserver')));
-
-gulp.task('clean', function (cb) {
-    rimraf(path.clean, cb);
-});
 
 
 //  Init tasks
@@ -142,7 +150,7 @@ gulp.task('clean', function (cb) {
 // Move font-awesome fonts folder to css compiled folder
 gulp.task('font-awesome', function () {
     return gulp.src('./bower_components/components-font-awesome/fonts/**.*')
-        .pipe(gulp.dest(path.src.base + 'fonts/font-awesome'));
+        .pipe(gulp.dest(paths.src.base + 'fonts/font-awesome'));
 });
 
 gulp.task('init', gulp.series('font-awesome', 'build'));
