@@ -152,7 +152,7 @@ gulp.task('default', gulp.series('build', gulp.parallel('watch', 'webserver')));
 
 // Move font-awesome fonts folder to css compiled folder
 gulp.task('font-awesome', function () {
-    return gulp.src('./bower_components/components-font-awesome/fonts/**.*')
+    return gulp.src(paths.src.bower + 'components-font-awesome/fonts/**.*')
         .pipe(gulp.dest(paths.src.base + 'fonts/font-awesome'));
 });
 
