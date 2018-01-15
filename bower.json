@@ -17,5 +17,19 @@
     "bootstrap": "^3.3.7",
     "normalize-css": "normalize.css#^7.0.0",
     "components-font-awesome": "^4.7.0"
+  },
+  "overrides": {
+    "jquery": {
+      "main": "dist/jquery.min.js"
+    },
+    "bootstrap": {
+      "main": [
+        "dist/css/bootstrap.min.css",
+        "dist/js/bootstrap.min.js"
+      ]
+    },
+    "components-font-awesome": {
+      "main": "css/font-awesome.min.css"
+    }
   }
 }
